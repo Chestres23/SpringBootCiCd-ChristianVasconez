@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
+
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,8 +16,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StudentRepositoryTest {
     @Autowired
     private StudentRepository studentRepository;
-    @Autowired
-    private AssertTrueValidator assertTrueValidator;
 
     @Test
     void shouldSaveAndFindStudentByEmail() {
@@ -26,12 +25,10 @@ public class StudentRepositoryTest {
         student.setBirthdate(LocalDate.of(2003,8,23));
         student.setActive(true);
 
-
         studentRepository.save(student);
 
-        var result = studentRepository.findByEmail("test@hotmai.com");
+        var result = studentRepository.findByEmail("test@hotmail.com");
         assertThat(result).isPresent();
         assertThat(result.get().getFullName()).isEqualTo("Test User");
-
     }
 }
