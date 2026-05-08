@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 public class StudentCreateRequest {
     @NotBlank @Size(min = 3, max = 120)
-    private String FullName;
+    private String fullName;
 
     @NotBlank @Email @Size(max = 120)
     private String email;
@@ -34,10 +34,10 @@ public class StudentCreateRequest {
     }
 
     public String getFullName() {
-        return FullName;
+        return fullName;
     }
 
     public void setFullName(String fullName) {
-        FullName = fullName;
+        this.fullName = fullName;
     }
 }
