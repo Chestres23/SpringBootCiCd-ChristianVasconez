@@ -22,3 +22,6 @@ spring:
     devtools:
         restart:
             enabled: true
+
+    app:
+        version: ${APP_VERSION:dev-local}

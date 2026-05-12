@@ -16,12 +16,45 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Trigger Render Deploy Hook
+      # Generar versión automática
+      - name: Build app version string
+        id: version
         run: |
-          echo "Ejecutando despliegue en Render..."
-          curl -X POST "$RENDER_DEPLOY_HOOK"
+          SHORT_SHA=${GITHUB_SHA::7}
+          VERSION="${GITHUB_RUN_NUMBER}-${SHORT_SHA}"
+
+          echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+          echo "Versión generada: $VERSION"
+
+      # Actualizar APP_VERSION en Render
+      - name: Update APP_VERSION env var in Render
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+          APP_VERSION: ${{ env.APP_VERSION }}
+
+        run: |
+          echo "Actualizando APP_VERSION=$APP_VERSION en Render..."
+
+          curl -s -X PUT \
+            -H "Accept: application/json" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            --data "{\"value\":\"$APP_VERSION\",\"type\":\"plain\"}" \
+            "https://api.render.com/v1/services/$RENDER_SERVICE_ID/env-vars/APP_VERSION"
+
+          echo "APP_VERSION actualizada."
+
+      # Deploy
+      - name: Trigger Render Deploy Hook
         env:
           RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
 
-      - name: Confirm deployment triggered
-        run: echo "Despliegue enviado correctamente a Render."
+        run: |
+          echo "Ejecutando despliegue en Render..."
+
+          curl --fail -X POST "$RENDER_DEPLOY_HOOK"
+
+          echo "Deploy ejecutado correctamente."
