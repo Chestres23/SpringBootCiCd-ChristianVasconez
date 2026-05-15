@@ -9,8 +9,8 @@ COPY . .
 
 RUN gradle clean bootJar --no-daemon
 
-# Forzar error intencional en la etapa de build
-RUN exit 1
+## Forzar error intencional en la etapa de build
+#RUN exit 1
 
 # =========================
 # Etapa 2: Run
